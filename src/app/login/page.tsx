@@ -2,24 +2,32 @@
 
 import { signIn, useSession } from 'next-auth/react';
 
-const LoginPage = () => {
-  const { data: session } = useSession();
+const SignIn = () => {
+  const { data } = useSession();
+  const handleGoogleSignIn = async () => {
+    try {
+      await signIn('cognito', {
+        callbackUrl: 'http://localhost:3000',
+        provider: 'google',
+      });
+    } catch (error) {
+      console.error('Google Sign in failed', error);
+    }
+  };
 
   return (
     <div>
-      {session?.user ? (
+      <h1>ログイン画面</h1>
+      {data ? (
         <div>
-          <h1>ログイン成功</h1>
-          <p>ユーザー名: {session.user.name}</p>
-          <p>メールアドレス: {session.user.email}</p>
+          <p>ログイン済み: {data.user?.name}</p>
+          <p>Email: {data.user?.email}</p>
         </div>
       ) : (
-        <button onClick={() => signIn('google')} disabled={!!session}>
-        Googleログイン
-        </button>
+        <button onClick={handleGoogleSignIn}>Googleでログイン</button>
       )}
     </div>
   );
 };
 
-export default LoginPage;
+export default SignIn;

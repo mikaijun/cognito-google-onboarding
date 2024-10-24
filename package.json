@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.678.0",
+    "aws-amplify": "^6.6.6",
     "aws-sdk": "^2.1691.0",
     "dotenv": "^16.4.5",
     "next": "14.2.16",
