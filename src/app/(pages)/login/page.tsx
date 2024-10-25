@@ -2,47 +2,55 @@
 
 import { signIn, useSession } from 'next-auth/react';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 
 const SignIn = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  console.log(status)
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isRegistering, setIsRegistering] = useState(false);
-  const router = useRouter();
 
   const handleEmailPasswordSignIn = async () => {
-    const result = await signIn('credentials', {
-      email,
-      password,
-      redirect: false,
-    });
+    try {
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+      });
 
-    if (result?.ok) {
-      router.push('/'); // 認証後にリダイレクト
-    } else {
-      console.error('Login failed');
+      if (result?.error) {
+        console.error('Login failed:', result.error);
+        // 必要に応じてエラーメッセージを表示する処理
+      } else if (result?.status === 200) {
+        console.log('Login successful');
+        // 必要に応じて、ログイン後の処理を実行
+        // 例えば、セッションを更新するために手動でページをリロードするなど
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('Error during sign in:', error);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await signIn('google', {
+        callbackUrl: process.env.NEXT_PUBLIC_BASE_URL,
+      });
+    } catch (error) {
+      console.error('Google Sign in failed', error);
     }
   };
 
   const handleRegister = async () => {
-    console.log(email, password)
     try {
-      const response = await fetch('/api/auth/register', {
+      await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
       });
-
-      if (response.ok) {
-        console.log('User registered successfully');
-        // 自動的にログインする場合
-        handleEmailPasswordSignIn();
-      } else {
-        console.error('Registration failed');
-      }
     } catch (error) {
       console.error('Registration error:', error);
     }
@@ -77,6 +85,7 @@ const SignIn = () => {
           <button onClick={() => setIsRegistering(!isRegistering)}>
             {isRegistering ? 'ログインに切り替え' : '新規登録に切り替え'}
           </button>
+          <button onClick={handleGoogleSignIn}>googleログイン</button>
         </div>
       )}
     </div>
