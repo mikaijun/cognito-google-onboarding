@@ -7,7 +7,7 @@ const SignIn = () => {
   const handleGoogleSignIn = async () => {
     try {
       await signIn('cognito', {
-        callbackUrl: 'http://localhost:3000',
+        callbackUrl: process.env.NEXT_PUBLIC_BASE_URL,
         provider: 'google',
       });
     } catch (error) {

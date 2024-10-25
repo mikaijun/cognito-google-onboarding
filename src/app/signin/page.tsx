@@ -17,7 +17,7 @@ const SignIn = () => {
   const handleGoogleSignIn = async () => {
     try {
       await signIn('google', {
-        callbackUrl: 'http://localhost:3000', // 認証後にリダイレクトするURL
+        callbackUrl: process.env.NEXT_PUBLIC_BASE_URL,
       });
     } catch (error) {
       console.error('Google Sign in failed', error);

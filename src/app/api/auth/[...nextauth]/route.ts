@@ -4,11 +4,68 @@ import {
   CognitoIdentityProviderClient,
   AdminCreateUserCommand,
   AdminGetUserCommand,
+  AdminCreateUserRequest,
 } from '@aws-sdk/client-cognito-identity-provider';
 
 const cognitoClient = new CognitoIdentityProviderClient({
   region: process.env.COGNITO_REGION,
 });
+
+/**
+ * Cognitoにユーザーが存在するか確認する
+*/
+async function checkUserExists(email: string): Promise<boolean> {
+  try {
+    await cognitoClient.send(
+      new AdminGetUserCommand({
+        UserPoolId: process.env.COGNITO_USER_POOL_ID!,
+        Username: email,
+      })
+    );
+    return true;
+  } catch (error) {
+    // NOTE: ユーザーが存在しない場合はUserNotFoundExceptionが発生する。この時は後続処理を続行するためfalseを返す
+    if ((error as { name: string }).name === 'UserNotFoundException') {
+      return false;
+    } else {
+      console.error('Failed to check user existence in Cognito:', error);
+      throw error;
+    }
+  }
+}
+
+/**
+ * Cognitoにユーザーを作成する
+*/
+async function createUserInCognito(email: string, name: string) {
+  const params: AdminCreateUserRequest = {
+    UserPoolId: process.env.COGNITO_USER_POOL_ID!,
+    Username: email,
+    UserAttributes: [
+      {
+        Name: 'email',
+        Value: email,
+      },
+      {
+        Name: 'name',
+        Value: name,
+      },
+      {
+        Name: 'email_verified',
+        Value: 'true',
+      },
+    ],
+    // NOTE: Googleのユーザーはパスワードメールを受け取らないため、パスワードリセットを強制する
+    MessageAction: 'SUPPRESS',
+  };
+
+  try {
+    const command = new AdminCreateUserCommand(params);
+    await cognitoClient.send(command);
+  } catch (error) {
+    throw error;
+  }
+}
 
 const handler = NextAuth({
   providers: [
@@ -23,55 +80,15 @@ const handler = NextAuth({
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === 'google') {
-        let userExists = false;
-
         try {
-          // ユーザーが存在するかをチェック
-          await cognitoClient.send(
-            new AdminGetUserCommand({
-              UserPoolId: process.env.COGNITO_USER_POOL_ID!,
-              Username: user.email!,
-            })
-          );
-          userExists = true;
-          console.log('User already exists in Cognito');
-        } catch (error) {
-          if ((error as { name: string }).name === 'UserNotFoundException') {
-            console.log('User does not exist in Cognito');
-          } else {
-            console.error('Failed to check user existence in Cognito:', error);
-            return false;
-          }
-        }
+          const userExists = await checkUserExists(user.email!);
 
-        // ユーザーが存在しない場合のみ新規作成
-        if (!userExists) {
-          try {
-            const params = {
-              UserPoolId: process.env.COGNITO_USER_POOL_ID!,
-              Username: user.email!,
-              UserAttributes: [
-                {
-                  Name: 'email',
-                  Value: user.email!,
-                },
-                {
-                  Name: 'name',
-                  Value: user.name || '',
-                },
-                {
-                  Name: 'email_verified',
-                  Value: 'true',
-                },
-              ],
-            };
-            const command = new AdminCreateUserCommand(params);
-            await cognitoClient.send(command);
-            console.log('New user created in Cognito');
-          } catch (createError) {
-            console.error('Failed to create new user in Cognito:', createError);
-            return false; // 作成に失敗した場合は認証をキャンセル
+          if (!userExists) {
+            await createUserInCognito(user.email!, user.name || '');
           }
+        } catch (error) {
+          console.error('Failed to create user in Cognito:', error);
+          return false;
         }
       }
       return true;
