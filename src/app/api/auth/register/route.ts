@@ -20,10 +20,11 @@ const handler = async (req: NextRequest) => {
   try {
     const command = new SignUpCommand(params);
     await client.send(command);
+    console.log(11111111111111);
     return NextResponse.json({ message: 'User registered successfully' });
   } catch (error) {
     console.error('Error registering user:', error);
-    return NextResponse.json({ message: error });
+    throw error;
   }
 }
 

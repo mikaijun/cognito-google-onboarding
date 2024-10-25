@@ -1,46 +1,34 @@
 "use client";
 
-import { signIn } from 'next-auth/react';
-import Link from 'next/link';
 import { useState } from 'react';
 
-const SignIn = () => {
+const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleEmailPasswordSignIn = async () => {
+  const handleRegister = async () => {
     try {
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
+      const result = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
       });
-
-      if (result?.error) {
-        alert("メールアドレスかパスワードが違います");
-      } else if (result?.status === 200) {
-        window.location.reload();
+      if (result?.status === 200) {
+        alert("メール送信しました。メール内のリンクをクリックして登録を完了してください");
+      } else {
+        alert("ユーザー登録中にエラーが発生しました");
       }
     } catch (error) {
-      alert("予期せぬエラーが発生しました");
-      console.error('Error during sign in:', error);
-    }
-  };
-
-  const handleGoogleSignIn = async () => {
-    try {
-      await signIn('google', {
-        callbackUrl: process.env.NEXT_PUBLIC_BASE_URL,
-      });
-    } catch (error) {
-      console.error('Google Sign in failed', error);
-      alert("予期せぬエラーが発生しました");
+      console.error('Registration error:', error);
+      alert('ユーザー登録中にエラーが発生しました');
     }
   };
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.title}>ログイン画面</h1>
+      <h1 style={styles.title}>ユーザー作成画面</h1>
       <div style={styles.form}>
         <input
           type="email"
@@ -56,15 +44,9 @@ const SignIn = () => {
           onChange={(e) => setPassword(e.target.value)}
           style={styles.input}
         />
-        <button onClick={handleEmailPasswordSignIn} style={styles.button}>
-          ログイン
-        </button>
-        <button onClick={handleGoogleSignIn} style={{ ...styles.button, backgroundColor: '#4285F4' }}>
-          Googleでログイン
-        </button>
-        <Link href="/register" style={styles.link}>
+        <button onClick={handleRegister} style={styles.button}>
           ユーザー登録
-        </Link>
+        </button>
       </div>
     </div>
   );
@@ -108,14 +90,9 @@ const styles = {
     border: 'none',
     fontSize: '16px',
     cursor: 'pointer',
-    backgroundColor: '#3388BB',
+    backgroundColor: '#0070f3',
     color: '#fff',
-  },
-  link: {
-    marginTop: '10px',
-    color: '#0070f3',
-    textDecoration: 'none',
   },
 };
 
-export default SignIn;
+export default Register;

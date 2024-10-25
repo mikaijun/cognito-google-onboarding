@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 const Verify = () => {
   const searchParams = useSearchParams()
   const confirmation_code = searchParams.get('confirmation_code')
   const user_name = searchParams.get('user_name')
-  const [message, setMessage] = useState('');
 
   useEffect(() => {
     const confirmSignUp = async () => {
@@ -20,10 +19,9 @@ const Verify = () => {
             },
             body: JSON.stringify({ email: user_name, code: confirmation_code }),
           });
-          setMessage('メールアドレスの確認が完了しました。ログインページにお進みください。');
+          window.location.href = '/login';
         } catch (error) {
           console.error('Error confirming user:', error);
-          setMessage('メールアドレスの確認に失敗しました。再度お試しください。');
         }
       }
     };
@@ -32,10 +30,7 @@ const Verify = () => {
   }, [user_name, confirmation_code]);
 
   return (
-    <div>
-      <h1>メールアドレス確認</h1>
-      <p>{message}</p>
-    </div>
+    <div></div>
   );
 };
 
