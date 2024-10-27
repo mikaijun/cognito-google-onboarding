@@ -10,6 +10,7 @@ import Link from 'next/link';
 const Home = () => {
   const { data: session, status } = useSession();
   const router = useRouter()
+  const isGoogleProvider = session?.provider === "google"
 
   const handleLogout = async () => {
     try {
@@ -30,9 +31,12 @@ const Home = () => {
       <div>
         <p>メールアドレス: {session!.user?.email}</p>
         <p>名前: {session!.user?.name}</p>
-        <Link href={PathList.url.profile} style={styles.link}>
-          プロフィールページ
-        </Link>
+        <p>ログイン方法: {isGoogleProvider ? "Google" : "メールアドレス"}</p>
+        {!isGoogleProvider && (
+          <Link href={PathList.url.profile} style={styles.link}>
+            プロフィールページ
+          </Link>
+        )}
         <button onClick={handleLogout} style={{ ...styles.button, marginTop: "16px" }}>ログアウト</button>
       </div>
     </main>

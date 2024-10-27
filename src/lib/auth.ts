@@ -154,9 +154,12 @@ const authOptions: NextAuthOptions = {
       return true;
     },
     // NOTE: ログイン成功時にアクセストークンをセッションに保存する
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
         token.accessToken = user.accessToken
+      }
+      if (account) {
+        token.provider = account.provider
       }
       // TODO: 必要に応じてリフレッシュ処理を追加する
       return token
@@ -164,6 +167,7 @@ const authOptions: NextAuthOptions = {
     // NOTE: クライアントサイドでセッションを取得する際にアクセストークンを追加する
     async session({ session, token }) {
       session.accessToken = token.accessToken
+      session.provider = token.provider
       return session
     },
   },

@@ -71,6 +71,7 @@ const AccountSettings = () => {
         <input
           type="password"
           placeholder="新しいパスワード"
+          disabled={!session}
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
           style={styles.input}

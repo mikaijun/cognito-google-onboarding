@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { PathList } from '@/constants/urls';
 
 const Verify = () => {
   const searchParams = useSearchParams()
   const confirmation_code = searchParams.get('confirmation_code')
   const user_name = searchParams.get('user_name')
+  const router = useRouter()
 
   useEffect(() => {
     const confirmSignUp = async () => {
@@ -19,7 +21,7 @@ const Verify = () => {
             },
             body: JSON.stringify({ email: user_name, code: confirmation_code }),
           });
-          window.location.href = '/login';
+          router.push(PathList.url.login);
         } catch (error) {
           console.error('Error confirming user:', error);
         }
@@ -27,7 +29,7 @@ const Verify = () => {
     };
 
     confirmSignUp();
-  }, [user_name, confirmation_code]);
+  }, [user_name, confirmation_code, router]);
 
   return (
     <div></div>

@@ -2,13 +2,15 @@
 
 import { useState } from 'react';
 
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { PathList } from '@/constants/urls';
 
 const ResetPassword = () => {
   const searchParams = useSearchParams();
   const user_name = searchParams.get("user_name");
   const confirmation_code = searchParams.get("confirmation_code");
   const [newPassword, setNewPassword] = useState('');
+  const router = useRouter()
 
   const handleResetPassword = async () => {
     try {
@@ -26,7 +28,7 @@ const ResetPassword = () => {
 
       if (result?.status === 200) {
         alert('パスワードがリセットされました。ログインページに移動します。');
-        window.location.href = '/login';
+        router.push(PathList.url.login);
       } else {
         alert('リセット中にエラーが発生しました');
       }
