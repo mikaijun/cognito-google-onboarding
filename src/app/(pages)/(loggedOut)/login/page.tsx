@@ -3,12 +3,20 @@
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { useState } from 'react';
+import { FcGoogle } from 'react-icons/fc';
+import { useRouter } from 'next/navigation'
+import { PathList } from '@/constants/urls';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const router = useRouter()
 
   const handleEmailPasswordSignIn = async () => {
+    if (!email || !password) {
+      alert("メールアドレスとパスワードを入力してください");
+      return;
+    }
     try {
       const result = await signIn('credentials', {
         email,
@@ -19,7 +27,7 @@ const SignIn = () => {
       if (result?.error) {
         alert("メールアドレスかパスワードが違います");
       } else if (result?.status === 200) {
-        window.location.href = '/';
+        router.push(PathList.url.home);
       }
     } catch (error) {
       alert("予期せぬエラーが発生しました");
@@ -39,7 +47,7 @@ const SignIn = () => {
   };
 
   return (
-    <div style={styles.container}>
+    <div>
       <h1 style={styles.title}>ログイン画面</h1>
       <div style={styles.form}>
         <input
@@ -59,11 +67,15 @@ const SignIn = () => {
         <button onClick={handleEmailPasswordSignIn} style={styles.button}>
           ログイン
         </button>
-        <button onClick={handleGoogleSignIn} style={{ ...styles.button, backgroundColor: '#4285F4' }}>
+        <button onClick={handleGoogleSignIn} style={{ ...styles.button, backgroundColor: '#fff', border: '1px solid #ccc', color: "#000" }}>
+          <FcGoogle />
           Googleでログイン
         </button>
-        <Link href="/register" style={styles.link}>
-          ユーザー登録
+        <Link href={PathList.url.register} style={styles.link}>
+          アカウントをお持ちでない方
+        </Link>
+        <Link href={PathList.url.forgot} style={styles.link}>
+          パスワードをお忘れの方
         </Link>
       </div>
     </div>
@@ -71,17 +83,10 @@ const SignIn = () => {
 };
 
 const styles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100vh',
-    backgroundColor: '#f7f7f7',
-  },
   title: {
     fontSize: '24px',
     marginBottom: '20px',
+    textAlign: 'center' as const,
   },
   form: {
     display: 'flex',
@@ -110,6 +115,10 @@ const styles = {
     cursor: 'pointer',
     backgroundColor: '#3388BB',
     color: '#fff',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '10px',
   },
   link: {
     marginTop: '10px',
