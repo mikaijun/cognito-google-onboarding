@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
+import { styles } from '@/constants/styles';
+import Link from 'next/link';
+import { PathList } from '@/constants/urls';
 
 const AccountSettings = () => {
   const { data: session } = useSession();
@@ -10,6 +13,10 @@ const AccountSettings = () => {
   const [newEmail, setNewEmail] = useState('');
 
   const handleResetPassword = async () => {
+    if (!newPassword) {
+      alert('新しいパスワードを入力してください');
+      return;
+    }
     try {
       const response = await fetch('/api/auth/change-password', {
         method: 'POST',
@@ -31,6 +38,10 @@ const AccountSettings = () => {
   };
 
   const handleChangeEmail = async () => {
+    if (!newEmail) {
+      alert('新しいメールアドレスを入力してください');
+      return;
+    }
     try {
       const response = await fetch('/api/auth/update-email', {
         method: 'POST',
@@ -52,10 +63,10 @@ const AccountSettings = () => {
   };
 
   return (
-    <div style={styles.container}>
+    <div>
       <h2>アカウント設定</h2>
-
-      <div style={styles.formContainer}>
+      <p style={{ marginBottom: "16px", fontSize: "10px" }}>※ パスワードは、英語大文字と英語小文字を含めて設定してください</p>
+      <div style={{ ...styles.form, marginBottom: "16px" }}>
         <h3>パスワードリセット</h3>
         <input
           type="password"
@@ -69,7 +80,7 @@ const AccountSettings = () => {
         </button>
       </div>
 
-      <div style={styles.formContainer}>
+      <div style={{ ...styles.form, marginBottom: "16px" }}>
         <h3>メールアドレス変更</h3>
         <input
           type="email"
@@ -82,44 +93,11 @@ const AccountSettings = () => {
           メールアドレスを変更
         </button>
       </div>
+      <Link href={PathList.url.home} style={styles.link}>
+        ホームへ戻る
+      </Link>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    alignItems: 'center',
-    padding: '20px',
-  },
-  formContainer: {
-    marginTop: '20px',
-    padding: '20px',
-    border: '1px solid #ddd',
-    borderRadius: '8px',
-    backgroundColor: '#f9f9f9',
-    width: '100%',
-    maxWidth: '400px',
-  },
-  input: {
-    width: '100%',
-    padding: '10px',
-    marginBottom: '10px',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-    fontSize: '16px',
-  },
-  button: {
-    width: '100%',
-    padding: '10px',
-    borderRadius: '4px',
-    border: 'none',
-    backgroundColor: '#0070f3',
-    color: '#fff',
-    fontSize: '16px',
-    cursor: 'pointer',
-  },
 };
 
 export default AccountSettings;

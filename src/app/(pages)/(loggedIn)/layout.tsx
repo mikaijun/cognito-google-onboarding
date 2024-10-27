@@ -13,8 +13,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 async function Layout({ children }: { children: React.ReactNode }) {
   const session: Session | null = await getServerAuthSession();
-  if (session) {
-    redirect(PathList.url.home);
+  if (!session) {
+    redirect(PathList.url.login);
   }
   return (
     <div style={styles}>
@@ -29,5 +29,5 @@ const styles = {
   alignItems: 'center',
   justifyContent: 'center',
   height: '100vh',
-  backgroundColor: '#f7f7f7',
+  backgroundColor: '#F6FBF6',
 };

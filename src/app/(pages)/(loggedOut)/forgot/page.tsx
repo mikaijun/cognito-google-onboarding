@@ -1,11 +1,18 @@
 "use client";
 
 import { useState } from 'react';
+import Link from 'next/link';
+import { PathList } from '@/constants/urls';
+import { styles } from '@/constants/styles';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
 
   const handleResetPasswordRequest = async () => {
+    if (!email) {
+      alert('メールアドレスを入力してください');
+      return;
+    }
     try {
       const result = await fetch('/api/auth/forgot', {
         method: 'POST',
@@ -26,9 +33,9 @@ const SignIn = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>パスワード忘れ</h1>
-      <div style={styles.form}>
+    <div>
+      <h1 style={styles.title}>パスワードをお忘れの方</h1>
+      <div style={{ ...styles.form, marginBottom: "16px" }}>
         <input
           type="email"
           placeholder="メールアドレス"
@@ -40,51 +47,11 @@ const SignIn = () => {
           パスワードリセット
         </button>
       </div>
+      <Link href={PathList.url.login} style={styles.link}>
+        ログインページへ戻る
+      </Link>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100vh',
-    backgroundColor: '#f7f7f7',
-  },
-  title: {
-    fontSize: '24px',
-    marginBottom: '20px',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    padding: '20px',
-    borderRadius: '8px',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-  },
-  input: {
-    width: '250px',
-    padding: '10px',
-    marginBottom: '10px',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-    fontSize: '16px',
-  },
-  button: {
-    width: '100%',
-    padding: '10px',
-    marginBottom: '10px',
-    borderRadius: '4px',
-    border: 'none',
-    fontSize: '16px',
-    cursor: 'pointer',
-    backgroundColor: '#3388BB',
-    color: '#fff',
-  },
 };
 
 export default SignIn;

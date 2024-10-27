@@ -1,6 +1,9 @@
 "use client";
 
+import { styles } from '@/constants/styles';
 import { useState } from 'react';
+import Link from 'next/link';
+import { PathList } from '@/constants/urls';
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -27,9 +30,10 @@ const Register = () => {
   };
 
   return (
-    <div style={styles.container}>
+    <div>
       <h1 style={styles.title}>ユーザー作成画面</h1>
-      <div style={styles.form}>
+      <p style={{ marginBottom: "16px", fontSize: "10px" }}>※ パスワードは、英語大文字と英語小文字を含めて設定してください</p>
+      <div style={{ ...styles.form, marginBottom: "16px" }}>
         <input
           type="email"
           placeholder="メールアドレス"
@@ -48,51 +52,11 @@ const Register = () => {
           ユーザー登録
         </button>
       </div>
-    </div>
+      <Link href={PathList.url.login} style={styles.link}>
+        ログインページへ戻る
+      </Link>
+    </div >
   );
-};
-
-const styles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100vh',
-    backgroundColor: '#f7f7f7',
-  },
-  title: {
-    fontSize: '24px',
-    marginBottom: '20px',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    padding: '20px',
-    borderRadius: '8px',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-  },
-  input: {
-    width: '250px',
-    padding: '10px',
-    marginBottom: '10px',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-    fontSize: '16px',
-  },
-  button: {
-    width: '100%',
-    padding: '10px',
-    marginBottom: '10px',
-    borderRadius: '4px',
-    border: 'none',
-    fontSize: '16px',
-    cursor: 'pointer',
-    backgroundColor: '#0070f3',
-    color: '#fff',
-  },
 };
 
 export default Register;

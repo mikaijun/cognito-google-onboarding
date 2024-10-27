@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { PathList } from '@/constants/urls';
 
 const ConfirmEmail = () => {
   const router = useRouter();
-  const [message, setMessage] = useState("確認中です...");
 
   useEffect(() => {
     const confirmEmail = async () => {
@@ -15,7 +15,8 @@ const ConfirmEmail = () => {
       const accessToken = urlParams.get('access_token');
 
       if (!userName || !confirmationCode) {
-        setMessage("無効なリンクです。");
+        alert('無効なリンクです。ホームにリダイレクトします。');
+        router.push(PathList.url.home);
         return;
       }
 
@@ -33,14 +34,16 @@ const ConfirmEmail = () => {
         });
 
         if (response.ok) {
-          setMessage("メールアドレスが確認されました。ログインページに移動します。");
-          setTimeout(() => router.push('/login'), 3000); // 3秒後にログインページにリダイレクト
+          alert('メールアドレスが確認されました。ホームにリダイレクトします。');
+          router.push(PathList.url.home);
         } else {
-          setMessage("メールアドレス確認中にエラーが発生しました。");
+          alert('メールアドレスの確認中にエラーが発生しました。ホームにリダイレクトします。');
+          router.push(PathList.url.home);
         }
       } catch (error) {
         console.error("Error confirming email:", error);
-        setMessage("予期せぬエラーが発生しました。");
+        alert('予期せぬエラーが発生しました。ホームにリダイレクトします。');
+        router.push(PathList.url.home);
       }
     };
 
@@ -48,23 +51,8 @@ const ConfirmEmail = () => {
   }, [router]);
 
   return (
-    <div style={styles.container}>
-      <h1>メールアドレス確認</h1>
-      <p>{message}</p>
-    </div>
+    <div />
   );
-};
-
-const styles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100vh',
-    backgroundColor: '#f9f9f9',
-    fontSize: '16px',
-  },
 };
 
 export default ConfirmEmail;

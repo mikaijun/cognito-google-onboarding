@@ -39,6 +39,7 @@ const ResetPassword = () => {
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>パスワードリセット</h1>
+      <p style={{ marginBottom: "16px", fontSize: "10px" }}>※ パスワードは、英語大文字と英語小文字を含めて設定してください</p>
       <div style={styles.form}>
         <input
           type="password"

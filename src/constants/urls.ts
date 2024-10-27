@@ -1,6 +1,7 @@
 export const PathList = {
   url: {
     home: '/',
+    profile: '/profile',
     login: '/login',
     register: '/register',
     forgot: '/forgot',
