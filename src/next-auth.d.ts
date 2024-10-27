@@ -1,27 +1,19 @@
+// NOTE: next-authのデフォルトの型定義だと、上記の設定でエラーが出るため、型定義を拡張
+// see: https://zenn.dev/c_shiraga/articles/4fac54eb4d5bd8
 import 'next-auth'
 
 declare module 'next-auth' {
   interface Session {
-    idToken?: string
     accessToken?: string
-    error?: string
   }
 
   interface User {
-    id?: string
-    idToken?: string
     accessToken?: string
-    refreshToken?: string
-    expiresIn?: number
   }
 }
 
 declare module 'next-auth/jwt' {
   interface JWT {
-    idToken?: string
     accessToken?: string
-    refreshToken?: string
-    expiresIn?: number
-    error?: string
   }
 }

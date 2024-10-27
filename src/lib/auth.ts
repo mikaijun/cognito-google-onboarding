@@ -80,7 +80,11 @@ export const generateSecretHash = (username: string): string => {
     .digest('base64');
 };
 
-
+/**
+ * メールアドレスとパスワードでCognitoに認証する処理は下記のリンクを参考にしています
+ *
+ * see: https://zenn.dev/c_shiraga/articles/4fac54eb4d5bd8
+ * */
 const authOptions: NextAuthOptions = {
   secret: "secret",
   providers: [
@@ -133,6 +137,7 @@ const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    // NOTE: Goggle認証成功時にCognitoにユーザーが存在しない場合は作成する
     async signIn({ user, account }) {
       if (account?.provider === 'google') {
         try {
@@ -148,23 +153,17 @@ const authOptions: NextAuthOptions = {
       }
       return true;
     },
+    // NOTE: ログイン成功時にアクセストークンをセッションに保存する
     async jwt({ token, user }) {
-      console.log(user, token)
       if (user) {
-        token.idToken = user.idToken
         token.accessToken = user.accessToken
-        token.expiresIn = user.expiresIn
-        token.refreshToken = user.refreshToken
-        token.email = user.email
       }
-
+      // TODO: 必要に応じてリフレッシュ処理を追加する
       return token
     },
+    // NOTE: クライアントサイドでセッションを取得する際にアクセストークンを追加する
     async session({ session, token }) {
-      // 必要に応じてトークンを暗号化させてください
-      session.idToken = token.idToken
       session.accessToken = token.accessToken
-      session.error = token.error
       return session
     },
   },
