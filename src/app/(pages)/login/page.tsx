@@ -19,7 +19,7 @@ const SignIn = () => {
       if (result?.error) {
         alert("メールアドレスかパスワードが違います");
       } else if (result?.status === 200) {
-        window.location.reload();
+        window.location.href = '/';
       }
     } catch (error) {
       alert("予期せぬエラーが発生しました");
