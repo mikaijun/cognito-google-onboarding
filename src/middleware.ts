@@ -11,7 +11,7 @@ export const config = {
  * see: https://zenn.dev/ksyunnnn/articles/3aae5870e6a1fe
  */
 export function middleware(req: NextRequest) {
-  if (process.env.NEXT_PUBLIC_BASE_URL !== 'http://localhost:3000') {
+  if (process.env.NEXT_PUBLIC_BASE_URL === 'http://localhost:3000') {
     return NextResponse.next()
   }
 
