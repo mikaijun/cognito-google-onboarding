@@ -80,6 +80,7 @@ export const generateSecretHash = (username: string): string => {
     .digest('base64');
 };
 
+
 const authOptions: NextAuthOptions = {
   secret: "secret",
   providers: [
@@ -146,6 +147,25 @@ const authOptions: NextAuthOptions = {
         }
       }
       return true;
+    },
+    async jwt({ token, user }) {
+      console.log(user, token)
+      if (user) {
+        token.idToken = user.idToken
+        token.accessToken = user.accessToken
+        token.expiresIn = user.expiresIn
+        token.refreshToken = user.refreshToken
+        token.email = user.email
+      }
+
+      return token
+    },
+    async session({ session, token }) {
+      // 必要に応じてトークンを暗号化させてください
+      session.idToken = token.idToken
+      session.accessToken = token.accessToken
+      session.error = token.error
+      return session
     },
   },
 }
